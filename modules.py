@@ -36,3 +36,5 @@ class Candle:
 
 if __name__ == "__main__":
     candle = Candle('TEST', 12.0*60.0*60.0, (255, 255, 0))
+    candle.save_candle('test.pkl')
+    candle = candle.load_candle('test.pkl')
