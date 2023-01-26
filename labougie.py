@@ -18,6 +18,9 @@ Y = 300
 screen = pygame.display.set_mode((X, Y))
 font = pygame.font.SysFont('monospace', 15)
 
+##############################################################################
+#### THANKS TO https://github.com/tank-king for most of the flame effect! ####
+##############################################################################
 class FlameParticle:
     alpha_layer_qty = 2
     alpha_glow_difference_constant = 2
