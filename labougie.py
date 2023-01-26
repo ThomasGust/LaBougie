@@ -21,6 +21,7 @@ font = pygame.font.SysFont('monospace', 15)
 ##############################################################################
 #### THANKS TO https://github.com/tank-king for most of the flame effect! ####
 ##############################################################################
+
 class FlameParticle:
     alpha_layer_qty = 2
     alpha_glow_difference_constant = 2
@@ -52,6 +53,7 @@ class FlameParticle:
             if alpha <= 0:
                 alpha = 0
             radius = self.r * i * i * self.alpha_glow
+
             if self.r == 4 or self.r == 3:
                 r, g, b = (255, 0, 0)
             elif self.r == 2:
@@ -65,12 +67,12 @@ class FlameParticle:
 
 
 class Flame:
-    def __init__(self, x=X // 2, y=Y // 2):
+    def __init__(self, x=X // 2, y=Y // 2, fi=2, speed = 25.0):
         self.x = x
         self.y = y
-        self.flame_intensity = 2
+        self.flame_intensity = fi
         self.flame_particles = []
-        for i in range(self.flame_intensity * 25):
+        for i in range(self.flame_intensity * speed):
             self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 5)))
 
     def draw_flame(self):
@@ -119,14 +121,14 @@ class Candle:
             self.name = d['name']
             self.creation_date = d['created']
 
-
 def run():
-    candle = Candle("test_candle", 1.0 * 60.0, (255, 255, 0))
+    candle = Candle("test_candle", 3.0 * 60.0, (255, 255, 0))
     pygame.display.set_caption('LaBougie')
     st = time.time()
     running = True
 
-    flame = Flame()
+    flame = Flame(fi=2, speed=25)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
