@@ -122,50 +122,6 @@ class Candle:
             self.name = d['name']
             self.creation_date = d['created']
 
-
-class Button():
-    def __init__(self, color, x,y,width,height, text=''):
-        self.color = color
-
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.text = text
-
-    def draw(self,win,outline=None):
-        #Call this method to draw the button on the screen
-        if outline:
-            pygame.draw.ellipse(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
-            
-        pygame.draw.ellipse(win, self.color, (self.x,self.y,self.width,self.height),0)
-        
-        if self.text != '':
-            font = pygame.font.SysFont('comicsans', 20)
-            text = font.render(self.text, 1, (0,0,0))
-            win.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
-
-
-
-    def isOverEllipse(self,pos):
-        x = pos[0]
-        y = pos[1]
-        endPoint1 = self.x
-        endPoint2 = self.x + self.width
-        centerX = self.x+self.width/2
-        centerY = self.y+self.height/2
-        if x > endPoint1 and x < endPoint2:
-            h = centerY
-            k = centerX
-            b = self.height/2
-            a = self.width/2
-            upperY = h + b * (math.sqrt(1 - (x-k)**2 / a**2))
-            
-            lowerY = h - b * (math.sqrt(1 - (x-k)**2 / a**2))
-            if y < upperY and y > lowerY:
-                return True
-        return False
-
 class ColorPicker:
     def __init__(self, x, y, w, h):
         self.rect = pygame.Rect(x, y, w, h)
@@ -203,8 +159,6 @@ def run():
     running = True
 
     flame = Flame(fi=20, speed=25)
-
-    stop_button = Button((255, 0, 0), 20, 20, 20, 20)
     color_picker = ColorPicker(50, 50, 400, 60)
 
     while running:
@@ -229,7 +183,7 @@ def run():
         screen.blit(tl, (X - 100, Y - 100))
 
         candle_rectangle = pygame.Rect(0, 0, 60, 300 * (1.0 - percentage))
-        candle_rectangle.midbottom = (X // 2, (Y // 4) * 3)
+        candle_rectangle.midbottom = (X // 2, (Y // 20) * 18)
 
         wick_rectangle = pygame.Rect(0, 0, 10, 20)
         wick_rectangle.midbottom = candle_rectangle.midtop
@@ -243,8 +197,6 @@ def run():
 
         color_picker.update()
         color_picker.draw(screen)
-
-        stop_button.draw(screen)
 
         flame.draw_flame()
 
