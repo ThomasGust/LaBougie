@@ -18,6 +18,7 @@ X = 600
 Y = 600
 screen = pygame.display.set_mode((X, Y))
 font = pygame.font.SysFont('monospace', 15)
+title_font = pygame.font.SysFont('monospace', 25)
 
 ##############################################################################
 #### THANKS TO https://github.com/tank-king for most of the flame effect! ####
@@ -107,6 +108,7 @@ class Candle:
                     'color': self.color,
                     'burn_time': self.burn_time,
                     'elapsed_time': self.e_time,
+
                     'name': self.name,
                     'created': self.creation_date
                 }, f)
@@ -160,15 +162,30 @@ def run():
 
     flame = Flame(fi=20, speed=25)
     color_picker = ColorPicker(50, 50, 400, 60)
+    user_text = ''
+    title_rect = pygame.Rect(X//2, 0, 120, 60)
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if title_rect.collidepoint(event.pos):
+                    active = True
+                else:
+                    active = False
+    
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    user_text = user_text[:-1]
+                else:
+                    user_text += event.unicode
+                
+                candle.name = user_text
 
         screen.fill((255, 255, 255))
-
+        title = title_font.render(user_text, 1, (0, 0, 0))
         s = time.time() - st
         candle.e_time = s
 
@@ -179,8 +196,8 @@ def run():
         percentage = s / candle.burn_time
         text = f"{percentage*100:.2f}%"
 
-        tl = font.render(text, 1, (0, 0, 0))
-        screen.blit(tl, (X - 100, Y - 100))
+        title_rect.midbottom = color_picker.rect.center
+        screen.blit(title, title_rect)
 
         candle_rectangle = pygame.Rect(0, 0, 60, 300 * (1.0 - percentage))
         candle_rectangle.midbottom = (X // 2, (Y // 20) * 18)
@@ -194,6 +211,11 @@ def run():
         flame.x, flame.y = wick_rectangle.midbottom
         pygame.draw.rect(screen, candle.color, candle_rectangle)
         pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
+
+        percentage = font.render(text, 1, (0, 0, 0))
+        percentage_rect = pygame.Rect(0, 0, 60, 30)
+        percentage_rect.midtop = candle_rectangle.midbottom
+        screen.blit(percentage, percentage_rect)
 
         color_picker.update()
         color_picker.draw(screen)
