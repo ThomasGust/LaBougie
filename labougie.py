@@ -27,7 +27,7 @@ class FlameParticle:
     alpha_layer_qty = 2
     alpha_glow_difference_constant = 2
 
-    def __init__(self, x=X // 2, y=Y // 2, r=5):
+    def __init__(self, x=X // 2, y=Y // 2, r=25):
         self.x = x
         self.y = y
         self.r = r
@@ -74,13 +74,13 @@ class Flame:
         self.flame_intensity = fi
         self.flame_particles = []
         for i in range(self.flame_intensity * speed):
-            self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 5)))
+            self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 7)))
 
     def draw_flame(self):
         for i in self.flame_particles:
             if i.original_r <= 0:
                 self.flame_particles.remove(i)
-                self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 5)))
+                self.flame_particles.append(FlameParticle(self.x + random.randint(-5, 5), self.y, random.randint(1, 7)))
                 del i
                 continue
             i.update()
@@ -225,7 +225,7 @@ def run():
     st = time.time()
     running = True
 
-    flame = Flame(fi=2, speed=25)
+    flame = Flame(fi=20, speed=25)
 
     stop_button = Button((255, 0, 0), 20, 20, 20, 20)
     color_picker = ColorPicker(50, 50, 400, 60)
@@ -251,25 +251,25 @@ def run():
         tl = font.render(text, 1, (0, 0, 0))
         screen.blit(tl, (X - 100, Y - 100))
 
-        candle_rectangle = pygame.Rect(0, 0, 30, 150 * (1.0 - percentage))
+        candle_rectangle = pygame.Rect(0, 0, 60, 300 * (1.0 - percentage))
         candle_rectangle.midbottom = (X // 2, (Y // 4) * 3)
 
-        wick_rectangle = pygame.Rect(0, 0, 5, 10)
+        wick_rectangle = pygame.Rect(0, 0, 10, 20)
         wick_rectangle.midbottom = candle_rectangle.midtop
-        wick_rectangle.centery += 2
+        wick_rectangle.centery += 1
 
         color_picker.rect.centerx = candle_rectangle.centerx
 
-        flame.x, flame.y = wick_rectangle.midtop
+        flame.x, flame.y = wick_rectangle.midbottom
         pygame.draw.rect(screen, candle.color, candle_rectangle)
         pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
+
+        color_picker.update()
+        color_picker.draw(screen)
 
         stop_button.draw(screen)
 
         flame.draw_flame()
-
-        color_picker.update()
-        color_picker.draw(screen)
 
         candle.color = color_picker.get_color()
 
