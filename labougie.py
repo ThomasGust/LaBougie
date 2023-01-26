@@ -5,6 +5,7 @@ import pickle as pkl
 import time
 import os
 import random
+import math
 
 
 
@@ -13,8 +14,8 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = '%d, %d' % (150, 50)
 
 clock = pygame.time.Clock()
 
-X = 300
-Y = 300
+X = 600
+Y = 600
 screen = pygame.display.set_mode((X, Y))
 font = pygame.font.SysFont('monospace', 15)
 
@@ -121,6 +122,49 @@ class Candle:
             self.name = d['name']
             self.creation_date = d['created']
 
+
+class Button():
+    def __init__(self, color, x,y,width,height, text=''):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+
+    def draw(self,win,outline=None):
+        #Call this method to draw the button on the screen
+        if outline:
+            pygame.draw.ellipse(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
+            
+        pygame.draw.ellipse(win, self.color, (self.x,self.y,self.width,self.height),0)
+        
+        if self.text != '':
+            font = pygame.font.SysFont('comicsans', 20)
+            text = font.render(self.text, 1, (0,0,0))
+            win.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+
+
+
+    def isOverEllipse(self,pos):
+        x = pos[0]
+        y = pos[1]
+        endPoint1 = self.x
+        endPoint2 = self.x + self.width
+        centerX = self.x+self.width/2
+        centerY = self.y+self.height/2
+        if x > endPoint1 and x < endPoint2:
+            h = centerY
+            k = centerX
+            b = self.height/2
+            a = self.width/2
+            upperY = h + b * (math.sqrt(1 - (x-k)**2 / a**2))
+            
+            lowerY = h - b * (math.sqrt(1 - (x-k)**2 / a**2))
+            if y < upperY and y > lowerY:
+                return True
+        return False
+
 def run():
     candle = Candle("test_candle", 3.0 * 60.0, (255, 255, 0))
     pygame.display.set_caption('LaBougie')
@@ -129,6 +173,7 @@ def run():
 
     flame = Flame(fi=2, speed=25)
 
+    stop_button = Button((255, 0, 0), 20, 20, 20, 20)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -161,6 +206,7 @@ def run():
         pygame.draw.rect(screen, candle.color, candle_rectangle)
         pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
 
+        stop_button.draw(screen)
         flame.draw_flame()
         pygame.display.flip()
         clock.tick(60)
