@@ -155,7 +155,8 @@ class ColorPicker:
         pygame.draw.circle(surf, self.get_color(), center, self.rect.height // 3)
 
 def run():
-    candle = Candle("test_candle", 3.0 * 60.0, (255, 255, 0))
+    done = False
+    candle = Candle("test_candle", 3.0 * 10.0, (255, 255, 0))
     pygame.display.set_caption('LaBougie')
     st = time.time()
     running = True
@@ -190,37 +191,37 @@ def run():
         candle.e_time = s
 
         if s >= candle.burn_time:
-            running = False
-            sys.exit()
-
+            done = True
+            print('COMPLETED CANDLE!!!')
         percentage = s / candle.burn_time
         text = f"{percentage*100:.2f}%"
+        if not done:
+
+            candle_rectangle = pygame.Rect(0, 0, 60, 300 * (1.0 - percentage))
+            candle_rectangle.midbottom = (X // 2, (Y // 20) * 18)
+
+            wick_rectangle = pygame.Rect(0, 0, 10, 20)
+            wick_rectangle.midbottom = candle_rectangle.midtop
+            wick_rectangle.centery += 1
+
+            color_picker.rect.centerx = candle_rectangle.centerx
+
+            flame.x, flame.y = wick_rectangle.midbottom
+            pygame.draw.rect(screen, candle.color, candle_rectangle)
+            pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
+
+            color_picker.update()
+            color_picker.draw(screen)
+
+            flame.draw_flame()
 
         title_rect.midbottom = color_picker.rect.center
         screen.blit(title, title_rect)
-
-        candle_rectangle = pygame.Rect(0, 0, 60, 300 * (1.0 - percentage))
-        candle_rectangle.midbottom = (X // 2, (Y // 20) * 18)
-
-        wick_rectangle = pygame.Rect(0, 0, 10, 20)
-        wick_rectangle.midbottom = candle_rectangle.midtop
-        wick_rectangle.centery += 1
-
-        color_picker.rect.centerx = candle_rectangle.centerx
-
-        flame.x, flame.y = wick_rectangle.midbottom
-        pygame.draw.rect(screen, candle.color, candle_rectangle)
-        pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
 
         percentage = font.render(text, 1, (0, 0, 0))
         percentage_rect = pygame.Rect(0, 0, 60, 30)
         percentage_rect.midtop = candle_rectangle.midbottom
         screen.blit(percentage, percentage_rect)
-
-        color_picker.update()
-        color_picker.draw(screen)
-
-        flame.draw_flame()
 
         candle.color = color_picker.get_color()
 
