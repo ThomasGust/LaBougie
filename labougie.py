@@ -166,9 +166,6 @@ class Button():
                 return True
         return False
 
-def hsv2rgb(h,s,v):
-    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
-
 class ColorPicker:
     def __init__(self, x, y, w, h):
         self.rect = pygame.Rect(x, y, w, h)
@@ -198,26 +195,6 @@ class ColorPicker:
         surf.blit(self.image, self.rect)
         center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
         pygame.draw.circle(surf, self.get_color(), center, self.rect.height // 3)
-
-def hsl_to_rgb(h, s, l):
-    def hue_to_rgb(p, q, t):
-        t += 1 if t < 0 else 0
-        t -= 1 if t > 1 else 0
-        if t < 1/6: return p + (q - p) * 6 * t
-        if t < 1/2: return q
-        if t < 2/3: p + (q - p) * (2/3 - t) * 6
-        return p
-
-    if s == 0:
-        r, g, b = l, l, l
-    else:
-        q = l * (1 + s) if l < 0.5 else l + s - l * s
-        p = 2 * l - q
-        r = hue_to_rgb(p, q, h + 1/3)
-        g = hue_to_rgb(p, q, h)
-        b = hue_to_rgb(p, q, h - 1/3)
-
-    return r, g, b
 
 def run():
     candle = Candle("test_candle", 3.0 * 60.0, (255, 255, 0))
