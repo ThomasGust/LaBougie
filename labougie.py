@@ -6,7 +6,7 @@ import time
 import os
 import random
 import math
-
+import colorsys
 
 
 pygame.init()
@@ -126,6 +126,7 @@ class Candle:
 class Button():
     def __init__(self, color, x,y,width,height, text=''):
         self.color = color
+
         self.x = x
         self.y = y
         self.width = width
@@ -165,6 +166,59 @@ class Button():
                 return True
         return False
 
+def hsv2rgb(h,s,v):
+    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
+
+class ColorPicker:
+    def __init__(self, x, y, w, h):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.image = pygame.Surface((w, h))
+        self.image.fill((255, 255, 255))
+        self.rad = h//2
+        self.pwidth = w-self.rad*2
+        self.color = pygame.Color(0)
+        for i in range(self.pwidth):
+            self.color.hsla = (int(360*i/self.pwidth), 100, 50, 100)
+            pygame.draw.rect(self.image, self.color, (i+self.rad, h//3, 1, h-2*h//3))
+        self.p = 0
+
+    def get_color(self):
+        color = pygame.Color(0)
+        color.hsla = (int(self.p * self.pwidth), 100, 50, 100)
+        return color
+
+    def update(self):
+        moude_buttons = pygame.mouse.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        if moude_buttons[0] and self.rect.collidepoint(mouse_pos):
+            self.p = (mouse_pos[0] - self.rect.left - self.rad) / self.pwidth
+            self.p = (max(0, min(self.p, 1)))
+
+    def draw(self, surf):
+        surf.blit(self.image, self.rect)
+        center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
+        pygame.draw.circle(surf, self.get_color(), center, self.rect.height // 3)
+
+def hsl_to_rgb(h, s, l):
+    def hue_to_rgb(p, q, t):
+        t += 1 if t < 0 else 0
+        t -= 1 if t > 1 else 0
+        if t < 1/6: return p + (q - p) * 6 * t
+        if t < 1/2: return q
+        if t < 2/3: p + (q - p) * (2/3 - t) * 6
+        return p
+
+    if s == 0:
+        r, g, b = l, l, l
+    else:
+        q = l * (1 + s) if l < 0.5 else l + s - l * s
+        p = 2 * l - q
+        r = hue_to_rgb(p, q, h + 1/3)
+        g = hue_to_rgb(p, q, h)
+        b = hue_to_rgb(p, q, h - 1/3)
+
+    return r, g, b
+
 def run():
     candle = Candle("test_candle", 3.0 * 60.0, (255, 255, 0))
     pygame.display.set_caption('LaBougie')
@@ -174,6 +228,8 @@ def run():
     flame = Flame(fi=2, speed=25)
 
     stop_button = Button((255, 0, 0), 20, 20, 20, 20)
+    color_picker = ColorPicker(50, 50, 400, 60)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -208,6 +264,12 @@ def run():
 
         stop_button.draw(screen)
         flame.draw_flame()
+
+        color_picker.update()
+        color_picker.draw(screen)
+
+        candle.color = color_picker.get_color()
+
         pygame.display.flip()
         clock.tick(60)
 
