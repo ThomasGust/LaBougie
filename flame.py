@@ -1,49 +1,29 @@
-import pickle as pkl
-import time
-import random
 import pygame
+import os
+import random
 
-SCREEN_HEIGHT = 300
-SCREEN_WIDTH = 300
-class Candle:
+pygame.init()
 
-    def __init__(self, name, burn_time, color):
+SCREEN_WIDTH = 750
+SCREEN_HEIGHT = 650
 
-        assert type(color) == tuple or type(color) == str or type(color) == None
+os.environ['SDL_VIDEO_WINDOW_POS'] = '%d, %d' % (150, 50)
 
-        self.color = color
-        self.burn_time = burn_time
-        self.e_time = 0.0
-        self.name = name
-        self.creation_date = time.time()
-    
-    def save_candle(self, path):
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption('Flame Particles using Pygame')
 
-        with open(path, "wb") as f:
-            pkl.dump({'color':self.color,
-            'burn_time':self.burn_time,
-            'elapsed_time':self.e_time,
-            'name':self.name,
-            'created':self.creation_date}, f)
-    
-    def load_candle(self, path):
+FPS = 60
 
-        with open(path, "rb") as f:
-            d = pkl.load(f)
+clock = pygame.time.Clock()
 
-            self.color = d['color']
-            self.burn_time = d['burn_time']
-            self.e_time = d['elapsed_time']
-            self.name = d['name']
-            self.creation_date = d['created']
 
 class FlameParticle:
     alpha_layer_qty = 2
     alpha_glow_difference_constant = 2
 
-    def __init__(self, screen_width, screen_height, r=5):
-        self.x = screen_width // 2
-        self.y = screen_height // 2
+    def __init__(self, x=SCREEN_WIDTH // 2, y=SCREEN_HEIGHT // 2, r=5):
+        self.x = x
+        self.y = y
         self.r = r
         self.original_r = r
         self.alpha_layers = FlameParticle.alpha_layer_qty
@@ -99,7 +79,25 @@ class Flame:
             i.update()
             i.draw()
 
-if __name__ == "__main__":
-    candle = Candle('TEST', 12.0*60.0*60.0, (255, 255, 0))
-    candle.save_candle('test.pkl')
-    candle = candle.load_candle('test.pkl')
+
+flame = Flame()
+
+
+def check_events(events):
+
+    for e in events:
+        if e.type == pygame.QUIT:
+            quit()
+
+
+def main_window():
+    while True:
+        events = pygame.event.get()
+        check_events(events)
+        screen.fill((0, 0, 0))
+        flame.draw_flame()
+        pygame.display.update()
+        clock.tick(FPS)
+
+
+main_window()
