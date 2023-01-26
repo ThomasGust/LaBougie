@@ -258,11 +258,14 @@ def run():
         wick_rectangle.midbottom = candle_rectangle.midtop
         wick_rectangle.centery += 2
 
+        color_picker.rect.centerx = candle_rectangle.centerx
+
         flame.x, flame.y = wick_rectangle.midtop
         pygame.draw.rect(screen, candle.color, candle_rectangle)
         pygame.draw.rect(screen, (0, 0, 0), wick_rectangle)
 
         stop_button.draw(screen)
+
         flame.draw_flame()
 
         color_picker.update()
